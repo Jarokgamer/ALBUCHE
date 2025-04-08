@@ -4,10 +4,10 @@ import { useState } from 'react';
 
 const BURGER_OPTIONS = {
   bases: [
-    { name: 'Simple', price: 6400, comboPrice: 8700 },
-    { name: 'Doble', price: 7400, comboPrice: 9700 },
+    { name: 'Simple', price: 6400, comboPrice: 7100 },
+    { name: 'Doble', price: 7400, comboPrice: 8100 },
     { name: 'Triple', price: 8600, comboPrice: 9300 },
-    { name: 'Veggie', price: 6400, comboPrice: 8700 },
+    { name: 'Veggie', price: 6400, comboPrice: 7100 },
   ],
   quesos: [
     { name: 'Cheddar', price: 0 },
@@ -61,16 +61,23 @@ export default function OrderSection({ onAddToCart, productType, options = BURGE
   const calculateTotal = () => {
     let total = 0;
 
-    // Precio base (siempre con papas)
+    // Precio base
     const baseOption = options.bases.find(b => b.name === selectedBase);
     if (baseOption) {
-      total += baseOption.comboPrice; // Siempre usamos el precio con papas
-    }
-
-    // Precio adicional por toppings extras (solo para hamburguesas)
-    if (productType === 'hamburguesas' && selectedToppings.length > 2) {
-      const extraToppings = selectedToppings.length - 2;
-      total += extraToppings * 350;
+      // Si no hay toppings o solo hay 1, usar el precio base
+      if (selectedToppings.length <= 1) {
+        total += baseOption.price;
+      } 
+      // Si hay exactamente 2 toppings, usar el precio combo
+      else if (selectedToppings.length === 2) {
+        total += baseOption.comboPrice;
+      } 
+      // Si hay más de 2 toppings, usar el precio combo más el costo adicional
+      else {
+        total += baseOption.comboPrice;
+        const extraToppings = selectedToppings.length - 2;
+        total += extraToppings * 350;
+      }
     }
 
     return total;
@@ -138,12 +145,16 @@ export default function OrderSection({ onAddToCart, productType, options = BURGE
                   <span className="text-lg">{base.name}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-lg">{formatPrice(base.comboPrice)}</span>
+                  <span className="text-lg">{formatPrice(base.price)}</span>
                 </div>
               </label>
             ))}
           </div>
-          <p className="text-gray-400 text-center mt-4">Todos los combos incluyen papas fritas</p>
+          <p className="text-gray-400 text-center mt-4">
+            {selectedToppings.length >= 2 
+              ? `Incluye papas fritas + los primeros 2 toppings (${formatPrice(options.bases.find(b => b.name === selectedBase)?.comboPrice || 0)})`
+              : `Precio base sin papas. Agrega 2 toppings para incluir papas fritas (${selectedBase ? formatPrice(options.bases.find(b => b.name === selectedBase)?.comboPrice || 0) : "selecciona una base"}).`}
+          </p>
         </div>
 
         {/* Quesos selection */}
@@ -209,9 +220,13 @@ export default function OrderSection({ onAddToCart, productType, options = BURGE
               </label>
             ))}
           </div>
-          {productType === 'hamburguesas' && selectedToppings.length > 2 && (
+          {productType === 'hamburguesas' && (
             <p className="text-sm text-gray-400 text-center mt-2">
-              Los primeros 2 toppings son gratis, cada topping adicional tiene un costo de $350
+              {selectedToppings.length <= 1 
+                ? "Agrega 2 toppings para upgrade a combo con papas fritas" 
+                : selectedToppings.length === 2 
+                  ? "¡Combo activado! Incluye papas fritas"
+                  : `Combo activado con papas fritas. Cada topping adicional tiene un costo de $350`}
             </p>
           )}
         </div>
@@ -260,9 +275,13 @@ export default function OrderSection({ onAddToCart, productType, options = BURGE
                   <span className="text-3xl font-bold text-albuche-orange">
                     {formatPrice(total)}
                   </span>
-                  {productType === 'hamburguesas' && selectedToppings.length > 2 && (
+                  {productType === 'hamburguesas' && (
                     <span className="text-sm text-gray-400">
-                      Incluye {selectedToppings.length - 2} topping{selectedToppings.length - 2 > 1 ? 's' : ''} extra
+                      {selectedToppings.length <= 1 
+                        ? "Sin papas fritas" 
+                        : selectedToppings.length === 2 
+                          ? "Incluye papas fritas"
+                          : `Incluye papas fritas + ${selectedToppings.length - 2} topping${selectedToppings.length - 2 > 1 ? 's' : ''} extra`}
                     </span>
                   )}
                 </div>
