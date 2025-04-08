@@ -52,7 +52,7 @@ const RotatingText = forwardRef<any, RotatingTextProps>((props, ref) => {
   }, [next, rotationInterval]);
 
   return (
-    <div className={cn("relative overflow-hidden", mainClassName)} {...rest}>
+    <div className={cn("relative overflow-hidden", mainClassName || "")} {...rest}>
       <div className="invisible" aria-hidden="true" style={{ display: 'inline-block' }}>
         {texts.reduce((a, b) => a.length > b.length ? a : b)}
       </div>
