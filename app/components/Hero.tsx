@@ -27,21 +27,21 @@ export default function Hero() {
               <motion.span 
                 className="text-4xl md:text-5xl"
                 animate={{ opacity: [0.8, 1], y: [2, 0] }}
-                transition={{ repeat: Infinity, repeatType: "reverse", duration: 2 }}
+                transition={{ repeat: Infinity, repeatType: "reverse" as const, duration: 2 }}
               >
                 AL
               </motion.span>
               <motion.span 
                 className="text-7xl md:text-9xl text-gradient"
                 animate={{ scale: [1, 1.02, 1] }}
-                transition={{ repeat: Infinity, repeatType: "reverse", duration: 5 }}
+                transition={{ repeat: Infinity, repeatType: "reverse" as const, duration: 5 }}
               >
                 BUCHE
               </motion.span>
               <motion.span 
                 className="text-7xl md:text-9xl text-orange-500"
                 animate={{ rotate: [0, 5, 0] }}
-                transition={{ repeat: Infinity, repeatType: "reverse", duration: 5 }}
+                transition={{ repeat: Infinity, repeatType: "reverse" as const, duration: 5 }}
               >
                 .
               </motion.span>
